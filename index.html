@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIKAP DESA - DPMD Prov. Sultra</title>
+    
+    <!-- Framework & Icon -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom Styles & Animations */
+        body { background: radial-gradient(circle at top, #f4f7f6, #e9ecef); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #10b981; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-header { background: linear-gradient(135deg, #137748 0%, #0e5c37 100%); color: white; border-bottom: 5px solid #f2b814; box-shadow: 0 4px 15px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body class="text-gray-800 antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="glass-header p-4 sticky top-0 z-50 flex justify-between items-center transition-all">
+        <div class="flex items-center gap-4">
+            <img src="https://i.ibb.co.com/HTfFKsSc/SULTRA.png" alt="Logo Sultra" class="w-10 h-10 md:w-12 md:h-12 drop-shadow-md">
+            <div>
+                <h1 class="font-black text-xl tracking-tight leading-none text-white drop-shadow-md">SIKAP DESA</h1>
+                <p class="text-[10px] text-green-100 font-bold uppercase tracking-widest">DPMD Prov. Sultra</p>
+            </div>
+        </div>
+        <div id="navUser" class="hidden flex items-center gap-4">
+            <div class="text-right hidden md:block">
+                <p id="navUserName" class="font-black text-sm text-white">Nama</p>
+                <p id="navUserRole" class="text-[10px] text-yellow-300 font-black uppercase tracking-widest">Role</p>
+            </div>
+            <button onclick="window.doLogout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg transition transform active:scale-95"><i class="fas fa-power-off mr-1"></i> Keluar</button>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-6 lg:p-8">
+        
+        <!-- ================= VIEW: LOGIN ================= -->
+        <div id="view-login" class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl p-8 mt-10 border-t-8 border-green-600 fade-in">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-gray-800 mb-1 uppercase tracking-tight">Portal Integrasi</h2>
+                <p class="text-gray-500 text-xs font-bold leading-relaxed">Silakan masuk sesuai hak akses Anda (Admin, Peserta, atau Juri).</p>
+            </div>
+            
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-gray-800 text-[10px] font-black mb-2 uppercase tracking-widest"><i class="fas fa-user text-green-600 mr-1"></i> Username</label>
+                    <input type="text" id="loginUsername" onkeydown="if(event.key==='Enter') window.doLogin()" class="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl outline-none focus:border-green-500 bg-gray-50 font-bold" placeholder="Ketik username...">
+                </div>
+                <div>
+                    <label class="block text-gray-800 text-[10px] font-black mb-2 uppercase tracking-widest"><i class="fas fa-lock text-green-600 mr-1"></i> Password</label>
+                    <input type="password" id="loginPassword" onkeydown="if(event.key==='Enter') window.doLogin()" class="w-full px-5 py-3 border-2 border-gray-100 rounded-2xl outline-none focus:border-green-500 bg-gray-50 font-bold" placeholder="Ketik password...">
+                </div>
+                
+                <button onclick="window.doLogin()" id="btnLogin" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-black py-4 px-6 rounded-2xl shadow-xl transform active:scale-95 transition-all uppercase tracking-widest text-xs mt-4">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Masuk Sistem
+                </button>
+
+                <div class="mt-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                    <p class="text-[10px] font-bold text-yellow-800 mb-1"><i class="fas fa-info-circle mr-1"></i> Akun Demo Tersedia:</p>
+                    <ul class="text-[10px] text-yellow-700 font-bold list-disc pl-4 space-y-1 mt-2">
+                        <li><b>Admin:</b> admin / admin123</li>
+                        <li><b>Peserta:</b> desa1 / desa123</li>
+                        <li><b>Juri:</b> juri_kesehatan / juri123</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: PESERTA (Administrasi) ================= -->
+        <div id="view-peserta" class="hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border-l-[8px] border-green-600 p-6 flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-800 tracking-tight" id="lblPesertaDesa">Memuat...</h2>
+                    <p class="text-green-600 text-[10px] font-black uppercase tracking-widest" id="lblPesertaWilayah"></p>
+                </div>
+                <div class="bg-green-50 px-5 py-2 rounded-xl border border-green-200 flex items-center gap-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-[10px] font-black text-green-700 uppercase">Tahap Administrasi Aktif</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="bg-green-700 p-4 text-white font-black uppercase text-[10px] tracking-widest"><i class="fas fa-bullhorn mr-2"></i> Papan Informasi</div>
+                        <div id="pesertaPengumuman" class="p-4 space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar bg-gray-50"></div>
+                    </div>
+                    
+                    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-5">
+                        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3"><i class="fas fa-comment-dots mr-2 text-green-500"></i> Catatan Admin</h3>
+                        <div id="pesertaCatatan" class="text-sm font-bold text-gray-700 italic bg-yellow-50 p-4 rounded-2xl border border-yellow-100">Belum ada ulasan dari sekretariat.</div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8">
+                    <h3 class="text-lg font-black text-gray-800 uppercase tracking-tighter mb-6 pb-4 border-b-2 border-gray-50 flex items-center gap-3">
+                        <i class="fas fa-folder-open text-green-600"></i> Unggah 10 Syarat Administrasi
+                    </h3>
+                    <div id="pesertaBerkasContainer" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: JURI (Penilaian Lapangan) ================= -->
+        <div id="view-juri" class="hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border-l-[8px] border-blue-600 p-6 flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-800 tracking-tight">Panel Penilaian Juri</h2>
+                    <p class="text-blue-600 text-[10px] font-black uppercase tracking-widest" id="lblJuriBidang">Bidang ...</p>
+                </div>
+            </div>
+
+            <!-- Tahapan Selector -->
+            <div class="grid grid-cols-2 gap-4 mb-8" id="juriTahapanSelector">
+                <button onclick="window.setTahapJuri('Presentasi')" id="btnTahap1" class="bg-white p-6 rounded-3xl shadow-sm border-2 border-gray-100 hover:border-blue-300 transition group flex flex-col items-center gap-3 active:scale-95">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl group-hover:bg-blue-600 group-hover:text-white transition"><i class="fas fa-laptop-code"></i></div>
+                    <span class="font-black text-xs uppercase tracking-widest text-gray-700">1. Presentasi</span>
+                </button>
+                <button onclick="window.setTahapJuri('Klarifikasi')" id="btnTahap2" class="bg-white p-6 rounded-3xl shadow-sm border-2 border-gray-100 hover:border-blue-300 transition group flex flex-col items-center gap-3 active:scale-95">
+                    <div class="w-16 h-16 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-2xl group-hover:bg-green-600 group-hover:text-white transition"><i class="fas fa-map-marked-alt"></i></div>
+                    <span class="font-black text-xs uppercase tracking-widest text-gray-700">2. Klarifikasi Lapangan</span>
+                </button>
+            </div>
+
+            <!-- Form Penilaian -->
+            <div id="juriFormContainer" class="hidden bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 fade-in">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b-2 border-gray-50">
+                    <h3 class="text-lg font-black text-gray-800 tracking-tighter" id="lblJuriFormTitle">Form Penilaian</h3>
+                    <button onclick="window.resetTahapJuri()" class="text-[10px] bg-gray-100 text-gray-500 px-4 py-2 rounded-xl font-black uppercase hover:bg-gray-200"><i class="fas fa-arrow-left mr-1"></i> Kembali</button>
+                </div>
+                
+                <div class="mb-8">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Pilih Peserta yang Dinilai</label>
+                    <select id="juriSelectPeserta" onchange="window.loadJuriForm()" class="w-full p-4 border-2 border-blue-100 rounded-2xl font-bold bg-blue-50 text-blue-900 outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="">-- Pilih Peserta --</option>
+                    </select>
+                </div>
+
+                <div id="juriSoalList" class="space-y-6"></div>
+
+                <div class="mt-8 border-t-2 border-gray-50 pt-6 text-right hidden" id="juriSubmitSection">
+                    <button onclick="window.submitNilaiJuri()" id="btnSubmitJuri" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-8 py-4 rounded-2xl shadow-xl shadow-blue-200 uppercase tracking-widest text-xs transition transform active:scale-95">
+                        <i class="fas fa-save mr-2"></i> Simpan Penilaian Ke Server
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: ADMIN (Super Rekap) ================= -->
+        <div id="view-admin" class="hidden fade-in">
+            <div class="bg-white rounded-3xl shadow-sm border-l-[8px] border-yellow-500 p-6 flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-gray-800 tracking-tight">Dasbor Super Admin</h2>
+                    <p class="text-yellow-600 text-[10px] font-black uppercase tracking-widest">Pusat Integrasi SIKAP DESA</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="window.switchAdminTab('rekap')" id="tabRekap" class="bg-yellow-500 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition shadow-md">Data Terintegrasi</button>
+                    <button onclick="window.switchAdminTab('admin')" id="tabAdmin" class="bg-gray-100 text-gray-500 hover:bg-gray-200 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition">Evaluasi Berkas</button>
+                </div>
+            </div>
+
+            <!-- Tab: Super Rekap Integrasi -->
+            <div id="adminTabRekap" class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden fade-in">
+                <div class="p-6 border-b border-gray-50 flex justify-between items-center bg-gray-50">
+                    <h3 class="font-black text-gray-800 uppercase tracking-tighter"><i class="fas fa-chart-line text-yellow-500 mr-2"></i> Akumulasi Seluruh Tahapan</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-500 text-[9px] uppercase font-black tracking-widest text-center border-b-2 border-gray-200">
+                                <th class="p-4 text-left border-r">Wilayah Peserta</th>
+                                <th class="p-4 border-r bg-green-50 text-green-700">Skor Administrasi<br>(Admin)</th>
+                                <th class="p-4 border-r bg-blue-50 text-blue-700">Skor Presentasi<br>(Semua Juri)</th>
+                                <th class="p-4 border-r bg-purple-50 text-purple-700">Skor Lapangan<br>(Semua Juri)</th>
+                                <th class="p-4 bg-yellow-50 text-yellow-700 text-xs">SKOR AKHIR<br>INTEGRASI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableRekap" class="text-sm divide-y divide-gray-50 font-bold bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab: Evaluasi Administrasi (Berkas) -->
+            <div id="adminTabAdmin" class="hidden fade-in grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div class="xl:col-span-2 bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-500 text-[10px] uppercase font-black tracking-widest">
+                                <th class="p-5 border-b">Peserta</th>
+                                <th class="p-5 border-b text-center">Status Berkas</th>
+                                <th class="p-5 border-b text-center">Skor Admin</th>
+                                <th class="p-5 border-b text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBerkas" class="text-sm divide-y divide-gray-50 font-bold bg-white"></tbody>
+                    </table>
+                </div>
+                
+                <div class="xl:col-span-1">
+                    <div class="bg-white rounded-3xl shadow-sm p-6 border-t-8 border-yellow-400">
+                        <h3 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4"><i class="fas fa-bullhorn mr-2"></i> Papan Pengumuman</h3>
+                        <textarea id="adminInputPengumuman" rows="4" class="w-full p-4 border-2 border-gray-100 rounded-2xl text-sm bg-gray-50 outline-none focus:border-yellow-400 font-bold mb-4" placeholder="Ketik pengumuman baru untuk semua peserta..."></textarea>
+                        <button onclick="window.kirimPengumuman()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-black py-3 rounded-xl shadow-md uppercase text-[10px] tracking-widest transition active:scale-95">Posting Pengumuman</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= NOTIFICATION MODAL ================= -->
+    <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 z-[100] hidden flex justify-center items-center p-4 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-sm p-8 text-center transform transition-all scale-95" id="modalContentBox">
+            <div id="modalIcon" class="text-6xl mb-4"></div>
+            <h3 id="modalTitle" class="text-2xl font-black text-gray-800 tracking-tight mb-2">Title</h3>
+            <p id="modalMessage" class="text-sm font-bold text-gray-500 mb-8 leading-relaxed">Message</p>
+            <button onclick="window.closeModal()" id="modalBtn" class="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg transition active:scale-95 text-white">OK Mengerti</button>
+        </div>
+    </div>
+
+    <!-- ================= MODAL EVALUASI ADMIN ================= -->
+    <div id="modalPenilaianAdmin" class="fixed inset-0 bg-black bg-opacity-75 z-[90] hidden flex justify-center items-center p-4 backdrop-blur-sm fade-in">
+        <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="bg-yellow-500 text-white p-6 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-xl font-black uppercase tracking-tight leading-none">Evaluasi Administrasi</h3>
+                    <p class="text-[10px] mt-1 font-black uppercase tracking-widest" id="modalAdminDesaLabel">Wilayah</p>
+                </div>
+                <button onclick="document.getElementById('modalPenilaianAdmin').classList.add('hidden')" class="text-white hover:text-red-200 text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scrollbar grow bg-gray-50">
+                <input type="hidden" id="modalAdminUsername">
+                <div class="space-y-4" id="modalAdminBerkasList"></div>
+                <div class="mt-6 bg-white p-6 rounded-2xl border-2 border-gray-100">
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Input Manual Skor Administrasi (Maks 1000)</label>
+                    <input type="number" id="modalAdminSkorInput" class="w-full text-4xl font-black text-yellow-600 bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 text-center outline-none focus:border-yellow-500 mb-4" placeholder="0">
+                    
+                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Catatan Perbaikan</label>
+                    <textarea id="modalAdminCatatanInput" rows="3" class="w-full p-4 border-2 border-gray-100 rounded-xl text-sm bg-gray-50 outline-none font-bold"></textarea>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-white flex justify-end shrink-0">
+                <button onclick="window.simpanEvaluasiAdmin()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-3 rounded-xl font-black uppercase text-xs tracking-widest shadow-md active:scale-95">Simpan Hasil</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot, query, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Setup
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { /* Fallback config */ };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sikap-desa-v3';
+
+        window.db = db;
+        window.appId = appId;
+        window.fs = { collection, doc, setDoc, getDoc, getDocs, onSnapshot, query, deleteDoc };
+
+        // State Global Aplikasi
+        window.APP_STATE = { user: null, usersList: [], dataBerkas: {}, dataScores: {}, pengumuman: [], juriTahap: '' };
+
+        // Auth Listener Database Realtime
+        const initAuth = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) { console.error("Auth init error", e); }
+        };
+        initAuth();
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                window.APP_STATE.uid = user.uid;
+                await window.seedInitialData(); 
+                window.listenToDatabase();
+                window.checkSession();
+            }
+        });
+
+        const DOC_LIST = ["Surat Pengantar", "Gambaran Umum", "Evaluasi Diri 2 Thn", "Lampiran RPJM", "DPA Kelurahan", "RKP & APBDesa", "SK Perangkat", "Dokumentasi Prasarana", "SK Juara Sebelumnya", "Bebas Temuan Inspektorat"];
+        
+        // Modal Logic
+        window.showModal = (type, title, msg, btnClass = 'bg-gray-800 hover:bg-gray-900') => {
+            const m = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerHTML = msg;
+            
+            let icon = '<i class="fas fa-info-circle text-blue-500"></i>';
+            if(type === 'success') { icon = '<i class="fas fa-check-circle text-green-500"></i>'; btnClass = 'bg-green-600 hover:bg-green-700'; }
+            if(type === 'error') { icon = '<i class="fas fa-times-circle text-red-500"></i>'; btnClass = 'bg-red-600 hover:bg-red-700'; }
+            
+            document.getElementById('modalIcon').innerHTML = icon;
+            document.getElementById('modalBtn').className = `w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg transition active:scale-95 text-white ${btnClass}`;
+            
+            document.getElementById('modalContentBox').classList.remove('scale-95');
+            document.getElementById('modalContentBox').classList.add('scale-100');
+            m.classList.remove('hidden');
+        };
+        window.closeModal = () => document.getElementById('customModal').classList.add('hidden');
+
+        // Navigation
+        window.showView = (viewId) => {
+            ['view-login', 'view-peserta', 'view-juri', 'view-admin'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo(0,0);
+        };
+
+        // ================= BANK SOAL DARI EXCEL =================
+        // Cara Merubah/Menambah:
+        // Sesuaikan indikator dengan Excel, serta label dan nilai (val24, val25) sesuai point.
+        const BANK_SOAL = {
+            'juri_pemerintahan': [
+                {
+                    indikator: "1. Pelaksanaan Musyawarah Desa",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "2. Keterwakilan unsur masyarakat dalam Musyawarah Desa",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "3. Keterwakilan unsur Pemerintah Desa",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "4. Keterwakilan Badan Permusyawarahan Desa (BPD)",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "5. Waktu Pelaksanaan Musyawarah Perencanaan Pembangunan Desa",
+                    options: [
+                        { label: "Setelah bulan Juni tahun berjalan", val24: 1, val25: 1 },
+                        { label: "Sampai dengan bulan Juni tahun berjalan", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "6. Materi Musyawarah Desa: Penataan Desa",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "7. Materi Musyawarah Desa: Perencanaan Pembangunan Desa",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "8. Administrasi Berbasis Teknologi Informasi (TIK): Administrasi Umum",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "9. Administrasi Berbasis Teknologi Informasi (TIK): Administrasi Kependudukan",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "10. Administrasi Berbasis Teknologi Informasi (TIK): Administrasi Keuangan",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "11. Administrasi Berbasis Teknologi Informasi (TIK): Administrasi BPD (Khusus Desa)",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "12. Administrasi Berbasis Teknologi Informasi (TIK): Administrasi Pembangunan",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "13. Administrasi Berbasis Teknologi Informasi (TIK): Administrasi Lainnya",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "14. Perangkat yang mengelola Teknologi Informasi",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "15. Tersedia tokoh pemuda teknopreneur di tingkat RT/RW",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "16. Perpustakaan online",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                },
+                {
+                    indikator: "17. Internet gratis/HotSpot di area publik",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                }
+            ],
+            'juri_ekonomi': [
+                {
+                    indikator: "Pengangguran (Jumlah penduduk usia 15-65 tahun yang tidak bekerja)",
+                    options: [
+                        { label: "KURANG DARI 10%", val24: 4, val25: 4 },
+                        { label: "LEBIH DARI ATAU SAMA DENGAN 10%", val24: 1, val25: 1 }
+                    ]
+                },
+                {
+                    indikator: "Kelembagaan Ekonomi : Pasar Tradisional",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 2, val25: 2 }
+                    ]
+                }
+            ],
+            'juri_kesehatan': [
+                {
+                    indikator: "Kematian Bayi (Jumlah Kematian Bayi)",
+                    options: [
+                        { label: "PENURUNAN KURANG DARI 10% DARI TAHUN SEBELUMNYA", val24: 1, val25: 1 },
+                        { label: "PENURUNAN DI ATAS 10% DARI TAHUN SEBELUMNYA", val24: 4, val25: 4 }
+                    ]
+                },
+                {
+                    indikator: "Kepemilikan Jamban Dalam Rumah Tangga (Mempunyai Jamban Sendiri)",
+                    options: [
+                        { label: "MENURUN", val24: 1, val25: 1 },
+                        { label: "TETAP", val24: 2, val25: 2 },
+                        { label: "MENINGKAT", val24: 3, val25: 3 }
+                    ]
+                }
+            ],
+            'juri_kemasyarakatan': [
+                {
+                    indikator: "Musyawarah Dusun: Partisipasi Masyarakat",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 5, val25: 5 }
+                    ]
+                },
+                {
+                    indikator: "Gotong Royong Penduduk Desa 2 Tahun Terakhir",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 4, val25: 4 }
+                    ]
+                }
+            ],
+            'juri_kewilayahan': [
+                {
+                    indikator: "Keamanan: Konflik antar kelompok",
+                    options: [
+                        { label: "TIDAK ADA", val24: 4, val25: 4 },
+                        { label: "ADA", val24: 1, val25: 1 }
+                    ]
+                },
+                {
+                    indikator: "Keamanan: Pencurian dan perampokan biasa",
+                    options: [
+                        { label: "TIDAK ADA", val24: 2, val25: 2 },
+                        { label: "ADA", val24: 1, val25: 1 }
+                    ]
+                }
+            ],
+            'juri_pkk': [
+                {
+                    indikator: "Lembaga PKK: Keberadaan PKK",
+                    options: [
+                        { label: "TIDAK ADA", val24: 1, val25: 1 },
+                        { label: "ADA", val24: 4, val25: 4 }
+                    ]
+                },
+                {
+                    indikator: "Pendidikan: Buta Huruf (Penduduk yang tidak bisa baca tulis)",
+                    options: [
+                        { label: "TIDAK ADA", val24: 4, val25: 4 },
+                        { label: "ADA", val24: 1, val25: 1 }
+                    ]
+                }
+            ]
+        };
+
+        // ================= MANAJEMEN USER DAN PASSWORD =================
+        // Data Seeding (Memastikan data selalu ada di server saat pertama kali dibuka)
+        window.seedInitialData = async () => {
+            const usersRef = window.fs.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'users');
+            try {
+                const snap = await window.fs.getDocs(usersRef);
+                if(snap.empty) {
+                    
+                    // CARA MENAMBAH/MERUBAH USER: 
+                    // Tambahkan atau ubah data di dalam array ini:
+                    const initialUsers = [
+                        // --- ADMIN ---
+                        { username: 'admin', password: 'admin123', role: 'admin', desa: 'Sekretariat', kabupaten: 'Provinsi' },
+                        
+                        // --- PESERTA ---
+                        { username: 'desa1', password: 'desa123', role: 'peserta', desa: 'Desa Lomba 1', kabupaten: 'Kab. Konawe' },
+                        { username: 'desa2', password: 'desa123', role: 'peserta', desa: 'Desa Lomba 2', kabupaten: 'Kab. Muna' },
+                        // Contoh menambah desa baru:
+                        // { username: 'desa3', password: 'password_baru', role: 'peserta', desa: 'Nama Desa 3', kabupaten: 'Nama Kab' },
+
+                        // --- JURI ---
+                        { username: 'juri_pemerintahan', password: 'juri123', role: 'juri_pemerintahan', desa: 'Juri Pemerintahan', kabupaten: '-' },
+                        { username: 'juri_kewilayahan', password: 'juri123', role: 'juri_kewilayahan', desa: 'Juri Kewilayahan', kabupaten: '-' },
+                        { username: 'juri_kemasyarakatan', password: 'juri123', role: 'juri_kemasyarakatan', desa: 'Juri Kemasyarakatan', kabupaten: '-' },
+                        { username: 'juri_ekonomi', password: 'juri123', role: 'juri_ekonomi', desa: 'Juri Ekonomi', kabupaten: '-' },
+                        { username: 'juri_pkk', password: 'juri123', role: 'juri_pkk', desa: 'Juri PKK', kabupaten: '-' },
+                        { username: 'juri_kesehatan', password: 'juri123', role: 'juri_kesehatan', desa: 'Juri Kesehatan', kabupaten: '-' },
+                    ];
+
+                    for(let u of initialUsers) {
+                        await window.fs.setDoc(window.fs.doc(usersRef, u.username), u);
+                    }
+                }
+            } catch (e) {
+                console.log("Mock seed skipped.");
+            }
+        };
+
+        window.listenToDatabase = () => {
+            const dbRef = (col) => window.fs.collection(window.db, 'artifacts', window.appId, 'public', 'data', col);
+            
+            window.fs.onSnapshot(dbRef('users'), (snap) => {
+                window.APP_STATE.usersList = [];
+                snap.forEach(d => window.APP_STATE.usersList.push(d.data()));
+                window.refreshUI();
+            }, (e) => console.error(e));
+
+            window.fs.onSnapshot(dbRef('berkas'), (snap) => {
+                window.APP_STATE.dataBerkas = {};
+                snap.forEach(d => window.APP_STATE.dataBerkas[d.id] = d.data());
+                window.refreshUI();
+            }, (e) => console.error(e));
+
+            window.fs.onSnapshot(dbRef('scores'), (snap) => {
+                window.APP_STATE.dataScores = {};
+                snap.forEach(d => window.APP_STATE.dataScores[d.id] = d.data());
+                window.refreshUI();
+            }, (e) => console.error(e));
+
+            window.fs.onSnapshot(dbRef('pengumuman'), (snap) => {
+                window.APP_STATE.pengumuman = [];
+                snap.forEach(d => window.APP_STATE.pengumuman.push(d.data()));
+                window.APP_STATE.pengumuman.sort((a,b) => b.ts - a.ts);
+                window.refreshUI();
+            }, (e) => console.error(e));
+        };
+
+        window.refreshUI = () => {
+            const user = window.APP_STATE.user;
+            if(!user) return;
+            if(user.role === 'admin') window.renderAdminTab();
+            if(user.role === 'peserta') window.renderPesertaView();
+        };
+
+        // Auth Logic & Fallback System
+        window.doLogin = () => {
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+            if(!u || !p) return window.showModal('error', 'Gagal', 'Username dan Password wajib diisi!');
+
+            const btn = document.getElementById('btnLogin');
+            btn.innerHTML = '<div class="loader"></div> Validasi...';
+
+            setTimeout(() => {
+                // 1. Coba cari di database realtime
+                let user = window.APP_STATE.usersList.find(x => x.username === u && x.password === p);
+                
+                // 2. FALLBACK DARURAT: Jika realtime belum termuat, gunakan akun statis lokal
+                if(!user) {
+                    
+                    // PENTING: Jika Bapak menambahkan User di initialUsers atas, 
+                    // Pastikan Bapak juga menambahkannya di array fallbackUsers ini:
+                    const fallbackUsers = [
+                        { username: 'admin', password: 'admin123', role: 'admin', desa: 'Sekretariat', kabupaten: 'Provinsi' },
+                        { username: 'desa1', password: 'desa123', role: 'peserta', desa: 'Desa Lomba 1', kabupaten: 'Kab. Konawe' },
+                        { username: 'desa2', password: 'desa123', role: 'peserta', desa: 'Desa Lomba 2', kabupaten: 'Kab. Muna' },
+                        { username: 'juri_pemerintahan', password: 'juri123', role: 'juri_pemerintahan', desa: 'Juri Pemerintahan', kabupaten: '-' },
+                        { username: 'juri_kewilayahan', password: 'juri123', role: 'juri_kewilayahan', desa: 'Juri Kewilayahan', kabupaten: '-' },
+                        { username: 'juri_kemasyarakatan', password: 'juri123', role: 'juri_kemasyarakatan', desa: 'Juri Kemasyarakatan', kabupaten: '-' },
+                        { username: 'juri_ekonomi', password: 'juri123', role: 'juri_ekonomi', desa: 'Juri Ekonomi', kabupaten: '-' },
+                        { username: 'juri_pkk', password: 'juri123', role: 'juri_pkk', desa: 'Juri PKK', kabupaten: '-' },
+                        { username: 'juri_kesehatan', password: 'juri123', role: 'juri_kesehatan', desa: 'Juri Kesehatan', kabupaten: '-' },
+                    ];
+                    user = fallbackUsers.find(x => x.username === u && x.password === p);
+                }
+
+                btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i> Masuk Sistem';
+                
+                if(user) {
+                    window.APP_STATE.user = user;
+                    localStorage.setItem('sikap_session', JSON.stringify(user));
+                    window.checkSession();
+                    window.showModal('success', 'Berhasil', `Selamat datang, ${user.desa} (${user.role})`);
+                } else {
+                    window.showModal('error', 'Ditolak', 'Akun tidak ditemukan atau password salah.');
+                }
+            }, 800);
+        };
+
+        window.doLogout = () => {
+            window.APP_STATE.user = null;
+            localStorage.removeItem('sikap_session');
+            document.getElementById('navUser').classList.add('hidden');
+            window.showView('view-login');
+        };
+
+        window.checkSession = () => {
+            const saved = localStorage.getItem('sikap_session');
+            if(saved) window.APP_STATE.user = JSON.parse(saved);
+            
+            const user = window.APP_STATE.user;
+            if(!user) return window.showView('view-login');
+
+            document.getElementById('navUser').classList.remove('hidden');
+            document.getElementById('navUserName').innerText = user.desa;
+            document.getElementById('navUserRole').innerText = user.role;
+
+            if(user.role === 'admin') {
+                window.showView('view-admin');
+                window.switchAdminTab('rekap');
+            } else if(user.role === 'peserta') {
+                window.showView('view-peserta');
+                document.getElementById('lblPesertaDesa').innerText = user.desa;
+                document.getElementById('lblPesertaWilayah').innerText = user.kabupaten;
+                window.renderPesertaView();
+            } else if(user.role.startsWith('juri')) {
+                window.showView('view-juri');
+                let bidangFormat = user.role.split('_')[1];
+                document.getElementById('lblJuriBidang').innerText = `Bidang ${bidangFormat.charAt(0).toUpperCase() + bidangFormat.slice(1)}`;
+                window.resetTahapJuri();
+            }
+        };
+
+        // ================= LOGIC PESERTA =================
+        window.renderPesertaView = () => {
+            const user = window.APP_STATE.user;
+            const data = window.APP_STATE.dataBerkas[user.username] || { uploads: {}, adminScore: 0, adminCatatan: '' };
+            
+            // Render Pengumuman
+            const pContainer = document.getElementById('pesertaPengumuman');
+            pContainer.innerHTML = '';
+            if(window.APP_STATE.pengumuman.length > 0) {
+                window.APP_STATE.pengumuman.slice(0, 5).forEach(p => {
+                    pContainer.innerHTML += `<div class="bg-white border-l-4 border-green-500 p-3 rounded-xl shadow-sm"><span class="text-[9px] font-black text-green-600 uppercase tracking-widest">${new Date(p.ts).toLocaleDateString()}</span><p class="text-xs font-bold text-gray-700 mt-1">${p.isi}</p></div>`;
+                });
+            } else {
+                pContainer.innerHTML = '<p class="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center py-5">Belum ada info.</p>';
+            }
+
+            // Render Catatan
+            document.getElementById('pesertaCatatan').innerText = data.adminCatatan || 'Belum ada ulasan sekretariat.';
+
+            // Render Berkas
+            const bContainer = document.getElementById('pesertaBerkasContainer');
+            bContainer.innerHTML = '';
+            DOC_LIST.forEach((docName, i) => {
+                const up = data.uploads[i];
+                let btn = `<label class="bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase cursor-pointer transition"><i class="fas fa-upload mr-1"></i> Upload<input type="file" class="hidden" onchange="window.handleUpload(this, ${i})"></label>`;
+                
+                if(up) {
+                    btn = `<div class="flex gap-2"><span class="bg-green-100 text-green-700 px-3 py-2 rounded-xl text-[10px] font-black uppercase"><i class="fas fa-check"></i> Tersimpan</span> <label class="bg-white border border-gray-200 text-gray-500 px-3 py-2 rounded-xl text-[10px] font-black uppercase cursor-pointer hover:bg-gray-50">Ganti<input type="file" class="hidden" onchange="window.handleUpload(this, ${i})"></label></div>`;
+                }
+
+                bContainer.innerHTML += `
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-green-300 transition group">
+                        <div class="text-xs font-bold text-gray-700"><span class="text-green-600 mr-2 font-black">DOC-${i+1}</span> ${docName}</div>
+                        <div>${btn}</div>
+                    </div>`;
+            });
+        };
+
+        window.handleUpload = async (input, idx) => {
+            const file = input.files[0]; if(!file) return;
+            const user = window.APP_STATE.user;
+            
+            const docRef = window.fs.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'berkas', user.username);
+            
+            try {
+                let existingData = window.APP_STATE.dataBerkas[user.username] || { uploads: {} };
+                existingData.uploads[idx] = { name: file.name, ts: Date.now(), dummyUrl: 'uploaded_success' };
+                
+                await window.fs.setDoc(docRef, existingData, {merge: true});
+                window.showModal('success', 'Terunggah', `Berkas ${DOC_LIST[idx]} berhasil disimpan.`);
+            } catch(e) { window.showModal('error', 'Gagal', 'Koneksi database terputus.'); }
+        };
+
+        // ================= LOGIC JURI =================
+        window.APP_STATE.juriTahap = '';
+        window.setTahapJuri = (tahap) => {
+            window.APP_STATE.juriTahap = tahap;
+            document.getElementById('juriTahapanSelector').classList.add('hidden');
+            document.getElementById('juriFormContainer').classList.remove('hidden');
+            document.getElementById('lblJuriFormTitle').innerText = `Tahap: ${tahap}`;
+            
+            const select = document.getElementById('juriSelectPeserta');
+            select.innerHTML = '<option value="">-- Pilih Peserta --</option>';
+            
+            // Gunakan list fallback jika realtime belum sempurna
+            let availablePeserta = window.APP_STATE.usersList.filter(u => u.role === 'peserta');
+            if(availablePeserta.length === 0) {
+                availablePeserta = [
+                    { username: 'desa1', desa: 'Desa Lomba 1', kabupaten: 'Kab. Konawe' },
+                    { username: 'desa2', desa: 'Desa Lomba 2', kabupaten: 'Kab. Muna' }
+                ];
+            }
+
+            availablePeserta.forEach(u => {
+                select.innerHTML += `<option value="${u.username}">${u.desa} (${u.kabupaten})</option>`;
+            });
+            document.getElementById('juriSoalList').innerHTML = '';
+            document.getElementById('juriSubmitSection').classList.add('hidden');
+        };
+
+        window.resetTahapJuri = () => {
+            document.getElementById('juriTahapanSelector').classList.remove('hidden');
+            document.getElementById('juriFormContainer').classList.add('hidden');
+        };
+
+        window.loadJuriForm = () => {
+            const p = document.getElementById('juriSelectPeserta').value;
+            if(!p) { document.getElementById('juriSoalList').innerHTML = ''; document.getElementById('juriSubmitSection').classList.add('hidden'); return; }
+            
+            const roleJuri = window.APP_STATE.user.role;
+            const listSoalAsli = BANK_SOAL[roleJuri] || [];
+
+            let html = '';
+            
+            if(listSoalAsli.length === 0) {
+                html = '<div class="text-center p-6 text-gray-400 font-bold">Bank soal untuk juri ini belum dikonfigurasi.</div>';
+            } else {
+                listSoalAsli.forEach((soal, i) => {
+                    let opts24 = soal.options.map(o => `<option value="${o.val24}">${o.label} (${o.val24} Poin)</option>`).join('');
+                    let opts25 = soal.options.map(o => `<option value="${o.val25}">${o.label} (${o.val25} Poin)</option>`).join('');
+                    
+                    html += `
+                    <div class="bg-gray-50 p-6 rounded-3xl border border-gray-100">
+                        <p class="font-bold text-sm text-gray-800 mb-4">${i+1}. ${soal.indikator}</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 text-center">Skor 2024</label>
+                                <select id="val24_${i}" class="w-full p-3 rounded-xl border border-gray-200 outline-none focus:border-blue-500 font-bold text-xs">
+                                    <option value="0">-- Pilih Evaluasi --</option>
+                                    ${opts24}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-black text-gray-400 uppercase mb-2 text-center">Skor 2025</label>
+                                <select id="val25_${i}" class="w-full p-3 rounded-xl border border-gray-200 outline-none focus:border-blue-500 font-bold text-xs">
+                                    <option value="0">-- Pilih Evaluasi --</option>
+                                    ${opts25}
+                                </select>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+
+            document.getElementById('juriSoalList').innerHTML = html;
+            
+            if(listSoalAsli.length > 0) {
+                document.getElementById('juriSubmitSection').classList.remove('hidden');
+            } else {
+                document.getElementById('juriSubmitSection').classList.add('hidden');
+            }
+        };
+
+        window.submitNilaiJuri = async () => {
+            const p = document.getElementById('juriSelectPeserta').value;
+            const juri = window.APP_STATE.user.role;
+            const tahap = window.APP_STATE.juriTahap;
+            
+            const listSoalAsli = BANK_SOAL[juri] || [];
+            
+            let total = 0; let rincian = {};
+            for(let i=0; i<listSoalAsli.length; i++) {
+                let v24 = parseInt(document.getElementById(`val24_${i}`).value) || 0;
+                let v25 = parseInt(document.getElementById(`val25_${i}`).value) || 0;
+                total += (v24 + v25);
+                rincian[i] = {v24, v25};
+            }
+
+            const id = `${p}_${juri}_${tahap}`;
+            const docRef = window.fs.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'scores', id);
+            
+            try {
+                await window.fs.setDoc(docRef, { peserta: p, juri: juri, tahap: tahap, total: total, rincian: rincian, ts: Date.now() });
+                window.showModal('success', 'Tersimpan', `Penilaian untuk tahap ${tahap} berhasil dikirim ke Admin.`);
+                document.getElementById('juriSelectPeserta').value = '';
+                window.loadJuriForm();
+            } catch(e) { window.showModal('error', 'Error', 'Gagal menyimpan.'); }
+        };
+
+        // ================= LOGIC ADMIN =================
+        window.switchAdminTab = (tab) => {
+            document.getElementById('adminTabRekap').classList.add('hidden');
+            document.getElementById('adminTabAdmin').classList.add('hidden');
+            document.getElementById('tabRekap').className = "bg-gray-100 text-gray-500 hover:bg-gray-200 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition";
+            document.getElementById('tabAdmin').className = "bg-gray-100 text-gray-500 hover:bg-gray-200 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition";
+            
+            if(tab === 'rekap') {
+                document.getElementById('adminTabRekap').classList.remove('hidden');
+                document.getElementById('tabRekap').className = "bg-yellow-500 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition shadow-md";
+            } else {
+                document.getElementById('adminTabAdmin').classList.remove('hidden');
+                document.getElementById('tabAdmin').className = "bg-yellow-500 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition shadow-md";
+            }
+            window.renderAdminTab();
+        };
+
+        window.renderAdminTab = () => {
+            // Gunakan list fallback jika realtime belum sempurna
+            let pesertaList = window.APP_STATE.usersList.filter(u => u.role === 'peserta');
+            if(pesertaList.length === 0) {
+                pesertaList = [
+                    { username: 'desa1', desa: 'Desa Lomba 1', kabupaten: 'Kab. Konawe' },
+                    { username: 'desa2', desa: 'Desa Lomba 2', kabupaten: 'Kab. Muna' }
+                ];
+            }
+            
+            let rekapHtml = '';
+            pesertaList.forEach(p => {
+                const u = p.username;
+                const b = window.APP_STATE.dataBerkas[u];
+                const skorAdmin = b ? (b.adminScore || 0) : 0;
+                
+                let skorPres = 0; let skorKlar = 0;
+                Object.values(window.APP_STATE.dataScores).forEach(s => {
+                    if(s.peserta === u) {
+                        if(s.tahap === 'Presentasi') skorPres += s.total;
+                        if(s.tahap === 'Klarifikasi') skorKlar += s.total;
+                    }
+                });
+
+                const totalAkhir = skorAdmin + skorPres + skorKlar;
+
+                rekapHtml += `
+                    <tr class="hover:bg-yellow-50 transition border-b border-gray-50">
+                        <td class="p-4 border-r">
+                            <div class="font-black text-gray-800 text-sm uppercase">${p.desa}</div>
+                            <div class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">${p.kabupaten}</div>
+                        </td>
+                        <td class="p-4 border-r text-center font-black text-green-600">${skorAdmin}</td>
+                        <td class="p-4 border-r text-center font-black text-blue-600">${skorPres}</td>
+                        <td class="p-4 border-r text-center font-black text-purple-600">${skorKlar}</td>
+                        <td class="p-4 text-center font-black text-yellow-600 text-xl bg-yellow-50/50">${totalAkhir}</td>
+                    </tr>`;
+            });
+            document.getElementById('adminTableRekap').innerHTML = rekapHtml;
+
+            let admHtml = '';
+            pesertaList.forEach(p => {
+                const u = p.username;
+                const b = window.APP_STATE.dataBerkas[u];
+                const upl = b ? Object.keys(b.uploads || {}).length : 0;
+                const sk = b ? (b.adminScore || 0) : 0;
+
+                admHtml += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="p-5 border-b"><div class="font-black text-gray-800">${p.desa}</div></td>
+                        <td class="p-5 border-b text-center"><span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-[10px] font-black">${upl} / 10 Terunggah</span></td>
+                        <td class="p-5 border-b text-center font-black text-yellow-600">${sk}</td>
+                        <td class="p-5 border-b text-center"><button onclick="window.bukaModalAdmin('${u}', '${p.desa}')" class="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-xl text-[10px] font-black uppercase shadow-md active:scale-95 transition">Periksa</button></td>
+                    </tr>`;
+            });
+            document.getElementById('adminTableBerkas').innerHTML = admHtml;
+        };
+
+        window.kirimPengumuman = async () => {
+            const val = document.getElementById('adminInputPengumuman').value;
+            if(!val) return window.showModal('error', 'Kosong', 'Isi pengumuman tidak boleh kosong.');
+            
+            try {
+                const docRef = window.fs.doc(window.fs.collection(window.db, 'artifacts', window.appId, 'public', 'data', 'pengumuman'));
+                await window.fs.setDoc(docRef, { isi: val, ts: Date.now() });
+                document.getElementById('adminInputPengumuman').value = '';
+                window.showModal('success', 'Sukses', 'Pengumuman telah diposting secara realtime.');
+            } catch(e) { window.showModal('error', 'Gagal', 'Terjadi kesalahan sistem.'); }
+        };
+
+        window.bukaModalAdmin = (username, desaName) => {
+            document.getElementById('modalAdminUsername').value = username;
+            document.getElementById('modalAdminDesaLabel').innerText = desaName;
+            
+            const b = window.APP_STATE.dataBerkas[username] || { uploads: {}, adminScore: 0, adminCatatan: '' };
+            
+            let list = '';
+            DOC_LIST.forEach((doc, i) => {
+                const isAda = b.uploads && b.uploads[i];
+                list += `
+                <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100">
+                    <span class="text-xs font-bold text-gray-600">${i+1}. ${doc}</span>
+                    ${isAda ? '<span class="text-[10px] font-black bg-green-100 text-green-700 px-3 py-1 rounded-full">ADA / OK</span>' : '<span class="text-[10px] font-black bg-red-100 text-red-600 px-3 py-1 rounded-full">KOSONG</span>'}
+                </div>`;
+            });
+            document.getElementById('modalAdminBerkasList').innerHTML = list;
+            document.getElementById('modalAdminSkorInput').value = b.adminScore || '';
+            document.getElementById('modalAdminCatatanInput').value = b.adminCatatan || '';
+            
+            document.getElementById('modalPenilaianAdmin').classList.remove('hidden');
+        };
+
+        window.simpanEvaluasiAdmin = async () => {
+            const u = document.getElementById('modalAdminUsername').value;
+            const s = parseInt(document.getElementById('modalAdminSkorInput').value) || 0;
+            const c = document.getElementById('modalAdminCatatanInput').value;
+
+            const docRef = window.fs.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'berkas', u);
+            try {
+                await window.fs.setDoc(docRef, { adminScore: s, adminCatatan: c }, {merge: true});
+                document.getElementById('modalPenilaianAdmin').classList.add('hidden');
+                window.showModal('success', 'Tersimpan', 'Skor administrasi berhasil diperbarui.');
+            } catch(e) { window.showModal('error', 'Gagal', 'Terjadi kesalahan sistem.'); }
+        };
+    </script>
+</body>
+</html>
